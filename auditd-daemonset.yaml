@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: auditd
+  namespace: openshift-logging
+  labels:
+    k8s-app: auditd-logging
+spec:
+  selector:
+    matchLabels:
+      name: auditd
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+      labels:
+        name: auditd
+    spec:
+      containers:
+      - name: auditd
+        image: image-registry.openshift-image-registry.svc:5000/openshift-logging/auditd-container:latest
+        securityContext:
+          #privileged: true
+          capabilities:
+            add: ["AUDIT_READ", "AUDIT_CONTROL", "AUDIT_WRITE", "SYS_NICE"]
+          seLinuxOptions:
+            user: system_u
+            role: system_r
+            type: auditd_exec_t
+            level: s0
+      dnsPolicy: ClusterFirst
+      schedulerName: default-scheduler
+      serviceAccount: logcollector
+      serviceAccountName: logcollector
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
