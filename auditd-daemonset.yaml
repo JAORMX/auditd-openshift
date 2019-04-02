@@ -25,6 +25,8 @@ spec:
           #  add: ["AUDIT_READ", "AUDIT_CONTROL", "AUDIT_WRITE", "SYS_NICE"]
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
+      #hostIPC: true
+      hostPID: true
       schedulerName: default-scheduler
       serviceAccount: logcollector
       serviceAccountName: logcollector
