@@ -16,6 +16,13 @@ spec:
       labels:
         name: auditd
     spec:
+      initContainers:
+      - name: init-audit-logs
+        image: image-registry.openshift-image-registry.svc:5000/openshift-logging/auditd:latest
+        command: ['sh', '-c', 'mkdir -p /var/log/audit']
+        volumeMounts:
+        - mountPath: /var/log
+          name: varlog
       containers:
       - name: auditd
         image: image-registry.openshift-image-registry.svc:5000/openshift-logging/auditd:latest
@@ -23,9 +30,18 @@ spec:
           privileged: true
           #capabilities:
           #  add: ["AUDIT_READ", "AUDIT_CONTROL", "AUDIT_WRITE", "SYS_NICE"]
+          #seLinuxOptions:
+          #  #user: system_u
+          #  #role: system_r
+          #  type: auditd_t
+          #  #level: s0
+        volumeMounts:
+        - mountPath: /dev/log
+          name: devlog
+        - mountPath: /var/log
+          name: varlog
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
-      #hostIPC: true
       hostPID: true
       schedulerName: default-scheduler
       serviceAccount: logcollector
@@ -34,6 +50,15 @@ spec:
       - effect: NoSchedule
         key: node-role.kubernetes.io/master
         operator: Exists
+      volumes:
+      - hostPath:
+          path: /dev/log
+          type: ""
+        name: devlog
+      - hostPath:
+          path: /var/log
+          type: ""
+        name: varlog
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
