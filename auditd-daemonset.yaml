@@ -43,6 +43,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       hostPID: true
+      hostIPC: true
       schedulerName: default-scheduler
       serviceAccount: logcollector
       serviceAccountName: logcollector
