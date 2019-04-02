@@ -18,17 +18,13 @@ spec:
     spec:
       containers:
       - name: auditd
-        image: image-registry.openshift-image-registry.svc:5000/openshift-logging/auditd-container:latest
+        image: image-registry.openshift-image-registry.svc:5000/openshift-logging/auditd:latest
         securityContext:
-          #privileged: true
-          capabilities:
-            add: ["AUDIT_READ", "AUDIT_CONTROL", "AUDIT_WRITE", "SYS_NICE"]
-          seLinuxOptions:
-            user: system_u
-            role: system_r
-            type: auditd_exec_t
-            level: s0
-      dnsPolicy: ClusterFirst
+          privileged: true
+          #capabilities:
+          #  add: ["AUDIT_READ", "AUDIT_CONTROL", "AUDIT_WRITE", "SYS_NICE"]
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
       schedulerName: default-scheduler
       serviceAccount: logcollector
       serviceAccountName: logcollector
