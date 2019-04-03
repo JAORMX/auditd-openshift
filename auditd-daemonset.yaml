@@ -58,6 +58,21 @@ data:
 
     # Delete all rules
     -D
+  audit.rules: |
+    # NOTE: This file is managed by the auditd-config ConfigMap
+    # ---
+    # This file contains the auditctl rules that are loaded
+    # whenever the audit daemon is started via the initscripts.
+    # The rules are simply the parameters that would be passed
+    # to auditctl.
+
+    # First rule - delete all
+    -D
+
+    # This suppresses syscall auditing for all tasks started
+    # with this rule in effect.  Remove it if you need syscall
+    # auditing.
+    -a task,never
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -102,7 +117,7 @@ spec:
         - mountPath: /var/log/audit
           name: auditlog
         - mountPath: /etc/audit/
-          name: config
+          name: auditdconfig
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       hostPID: true
@@ -127,10 +142,17 @@ spec:
           path: /var/log/audit
           type: ""
         name: auditlog
-      - name: config
+      - name: auditdconfig
         configMap:
           name: auditd-config
           defaultMode: 0610
+          items:
+          - key: auditd.conf
+            path: auditd.conf
+          - key: auditd-stop.rules
+            path: auditd-stop.rules
+          - key: audit.rules
+            path: rules.d/audit.rules
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
