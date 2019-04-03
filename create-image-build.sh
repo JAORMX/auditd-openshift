@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cat Dockerfile | oc new-build --name auditd --dockerfile='-'
+cat Dockerfile | oc new-build --namespace=openshift --name auditd --dockerfile='-'

@@ -18,14 +18,14 @@ spec:
     spec:
       initContainers:
       - name: init-audit-logs
-        image: image-registry.openshift-image-registry.svc:5000/openshift-logging/auditd:latest
+        image: image-registry.openshift-image-registry.svc:5000/openshift/auditd:latest
         command: ['sh', '-c', 'mkdir -p /var/log/audit']
         volumeMounts:
         - mountPath: /var/log
           name: varlog
       containers:
       - name: auditd
-        image: image-registry.openshift-image-registry.svc:5000/openshift-logging/auditd:latest
+        image: image-registry.openshift-image-registry.svc:5000/openshift/auditd:latest
         securityContext:
           privileged: true
           #capabilities:
