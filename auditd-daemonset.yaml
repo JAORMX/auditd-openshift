@@ -47,7 +47,7 @@ data:
     ##krb5_key_file = /etc/audit/audit.key
     distribute_network = no
 
-  auditd-stop.rules: |
+  audit-stop.rules: |
     # NOTE: This file is managed by the auditd-config ConfigMap
     # ---
     # These rules are loaded when the audit daemon stops
@@ -116,8 +116,15 @@ spec:
           name: devlog
         - mountPath: /var/log/audit
           name: auditlog
-        - mountPath: /etc/audit/
-          name: auditdconfig
+        - name: auditdconfig
+          mountPath: /etc/audit/auditd.conf
+          subPath: auditd.conf
+        - name: auditdconfig
+          mountPath: /etc/audit/audit-stop.rules
+          subPath: audit-stop.rules
+        - name: auditdconfig
+          mountPath: /etc/audit/rules.d/audit.rules
+          subPath: audit.rules
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       hostPID: true
@@ -146,13 +153,6 @@ spec:
         configMap:
           name: auditd-config
           defaultMode: 0610
-          items:
-          - key: auditd.conf
-            path: auditd.conf
-          - key: auditd-stop.rules
-            path: auditd-stop.rules
-          - key: audit.rules
-            path: rules.d/audit.rules
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
