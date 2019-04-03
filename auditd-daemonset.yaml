@@ -125,6 +125,10 @@ spec:
         - name: auditdconfig
           mountPath: /etc/audit/rules.d/audit.rules
           subPath: audit.rules
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/sbin/augenrules", "--load"]
       dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       hostPID: true
